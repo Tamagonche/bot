@@ -1,7 +1,10 @@
 import os
 import onchebot
+from dotenv import load_dotenv
 from onchebot.models import Message
 from supabase import create_client, Client
+
+load_dotenv()
 
 TOPIC_ID=817382
 SUPABASE_URL=os.environ.get("SUPABASE_URL", "")
