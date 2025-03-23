@@ -36,3 +36,5 @@ async def give_medicine(msg: Message, _):
         supabase.table("actions").insert({"type": "give_medicine", "username": msg.username, "pet_id": 1}).execute()
     except:
         pass
+
+onchebot.start()
