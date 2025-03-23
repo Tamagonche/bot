@@ -12,7 +12,7 @@ SUPABASE_KEY=os.environ.get("SUPABASE_KEY", "")
 
 onchebot.setup(
     loki_url=os.environ.get("LOKI_URL", None),
-    prometheus_port=os.environ.get("PROMETHEUS_PORT", 9464),
+    prometheus_port=int(os.environ.get("PROMETHEUS_PORT", 9464)),
 )
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
