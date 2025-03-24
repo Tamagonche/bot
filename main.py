@@ -49,6 +49,13 @@ async def give_medicine(msg: Message, _):
     except:
         pass
 
+@tamagonche.command("weed")
+async def weed(msg: Message, _):
+    try:
+        await supabase.table("actions").insert({"type": "weed", "username": msg.username, "pet_id": 1}).execute()
+    except:
+        pass
+
 async def notify_dead():
     await tamagonche.post_message("Je suis MORT :rip:")
 
