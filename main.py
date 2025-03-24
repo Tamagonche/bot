@@ -75,13 +75,20 @@ async def notify_hunger():
 prev_pet: dict[str, Any] | None = None
 
 async def on_pet_update(payload):
+    global prev_pet
+
     pet = payload["data"]["record"]
 
-    if prev_pet and prev_pet["food"] != pet["food"]:
-        if pet["food"] == 0:
-            await notify_dead()
-        elif pet["food"] <= pet["hunger_threshold"]:
-            await notify_hunger()
+    try:
+        if prev_pet and prev_pet["food"] != pet["food"]:
+            if pet["food"] == 0:
+                await notify_dead()
+            elif pet["food"] <= pet["hunger_threshold"]:
+                await notify_hunger()
+    except:
+        pass
+
+    prev_pet = pet
 
 async def init():
     global supabase
