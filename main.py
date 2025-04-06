@@ -57,7 +57,7 @@ async def weed(msg: Message, _):
         pass
 
 @tamagonche.command("marloute")
-async def weed(msg: Message, _):
+async def drink(msg: Message, _):
     try:
         await supabase.table("actions").insert({"type": "drink", "username": msg.username, "pet_id": 1}).execute()
     except:
