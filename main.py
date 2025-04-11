@@ -70,6 +70,13 @@ async def fap(msg: Message, _):
     except:
         pass
 
+@tamagonche.command("battre")
+async def punch(msg: Message, _):
+    try:
+        await supabase.table("actions").insert({"type": "punch", "username": msg.username, "pet_id": 1}).execute()
+    except:
+        pass
+
 async def notify_dead():
     await tamagonche.post_message("Je suis MORT :rip:")
 
