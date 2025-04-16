@@ -77,6 +77,13 @@ async def punch(msg: Message, _):
     except:
         pass
 
+@tamagonche.command("sueur")
+async def sweat(msg: Message, _):
+    try:
+        await supabase.table("actions").insert({"type": "sweat", "username": msg.username, "pet_id": 1}).execute()
+    except:
+        pass
+
 async def notify_dead():
     await tamagonche.post_message("Je suis MORT :rip:")
 
