@@ -31,11 +31,10 @@ user = onchebot.add_user(
 tamagonche = onchebot.add_bot("tamagonche", user, TOPIC_ID)
 
 def is_allowed(msg: Message) -> bool:
-    badges = msg.badges
-
-    if badges == None:
+    if msg.badges == None:
         return False
     
+    badges = msg.badges.split(",")
     rangs = [s for s in badges if "rangs/" in s]
 
     if len(rangs) == 0:
