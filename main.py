@@ -19,6 +19,7 @@ WARNING_INTERVAL = datetime.timedelta(hours=1)
 WHITELIST = [
     "Tohru",
     "LeChouffin",
+    "Utilisateur4",
 ]
 
 onchebot.setup(
@@ -34,6 +35,10 @@ user = onchebot.add_user(
 )
 
 tamagonche = onchebot.add_bot("tamagonche", user, TOPIC_ID)
+
+async def not_allowed(msg: Message):
+    text = random.choice([":Chatnon:", ":mqx:", ":AnyaNon:", ":claire_non:"])
+    await tamagonche.post_message(text, answer_to=msg)
 
 def is_allowed(msg: Message) -> bool:
     if msg.username in WHITELIST:
@@ -57,6 +62,7 @@ def is_allowed(msg: Message) -> bool:
 
 async def on_action(msg: Message, action_type: str):
     if not is_allowed(msg):
+        await not_allowed(msg)
         return
 
     try:
