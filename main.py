@@ -16,6 +16,11 @@ SUPABASE_URL=os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY=os.environ.get("SUPABASE_KEY", "")
 WARNING_INTERVAL = datetime.timedelta(hours=1)
 
+WHITELIST = [
+    "Tohru",
+    "LeChouffin",
+]
+
 onchebot.setup(
     loki_url=os.environ.get("LOKI_URL", None),
     prometheus_port=int(os.environ.get("PROMETHEUS_PORT", 9464)),
@@ -31,6 +36,9 @@ user = onchebot.add_user(
 tamagonche = onchebot.add_bot("tamagonche", user, TOPIC_ID)
 
 def is_allowed(msg: Message) -> bool:
+    if msg.username in WHITELIST:
+        return True
+
     if msg.badges == None:
         return False
     
