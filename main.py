@@ -7,12 +7,14 @@ import onchebot
 from dotenv import load_dotenv
 from onchebot.models import Message
 from supabase import create_async_client, AsyncClient
+import datetime
 
 load_dotenv()
 
 TOPIC_ID=817382
 SUPABASE_URL=os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY=os.environ.get("SUPABASE_KEY", "")
+WARNING_INTERVAL = datetime.timedelta(hours=1)
 
 onchebot.setup(
     loki_url=os.environ.get("LOKI_URL", None),
@@ -28,61 +30,64 @@ user = onchebot.add_user(
 
 tamagonche = onchebot.add_bot("tamagonche", user, TOPIC_ID)
 
-@tamagonche.command("nourrir")
-async def feed(msg: Message, _):
+def is_allowed(msg: Message) -> bool:
+    badges = msg.badges
+
+    if badges == None:
+        return False
+    
+    rangs = [s for s in badges if "rangs/" in s]
+
+    if len(rangs) == 0:
+        return False
+
+    rang = rangs[0]
+
+    if rang == "rangs/gitan":
+        return False
+
+    return True
+
+async def on_action(msg: Message, action_type: str):
+    if not is_allowed(msg):
+        return
+
     try:
-        await supabase.table("actions").insert({"type": "feed", "username": msg.username, "pet_id": 1}).execute()
+        await supabase.table("actions").insert({"type": action_type, "username": msg.username, "pet_id": 1}).execute()
     except:
         pass
+
+@tamagonche.command("nourrir")
+async def feed(msg: Message, _):
+    await on_action(msg, "feed")
 
 @tamagonche.command("nettoyer")
 async def clean_trash(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "clean_trash", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "clean_trash")
 
 @tamagonche.command("doliprane")
 async def give_medicine(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "give_medicine", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "give_medicine")
 
 @tamagonche.command("weed")
 async def weed(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "weed", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "weed")
 
 @tamagonche.command("marloute")
 async def drink(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "drink", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "drink")
 
 @tamagonche.command("branle")
 async def fap(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "fap", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "fap")
 
 @tamagonche.command("battre")
 async def punch(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "punch", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "punch")
 
 @tamagonche.command("sueur")
 async def sweat(msg: Message, _):
-    try:
-        await supabase.table("actions").insert({"type": "sweat", "username": msg.username, "pet_id": 1}).execute()
-    except:
-        pass
+    await on_action(msg, "sweat")
 
 async def notify_dead():
     await tamagonche.post_message("Je suis MORT :rip:")
@@ -100,23 +105,23 @@ async def notify_hunger():
     ])
     await tamagonche.post_message(f"{text} :tamagonche:")
 
-prev_pet: dict[str, Any] | None = None
+last_warning_time: datetime.datetime | None = None
 
 async def on_pet_update(payload):
-    global prev_pet
+    global last_warning_time
 
     pet = payload["data"]["record"]
+    now = datetime.datetime.now()
 
     try:
-        if prev_pet and prev_pet["food"] != pet["food"]:
+        if last_warning_time is None or (now - last_warning_time) >= WARNING_INTERVAL:
+            last_warning_time = now
             if pet["food"] == 0:
                 await notify_dead()
             elif pet["food"] <= pet["hunger_threshold"]:
                 await notify_hunger()
     except:
         pass
-
-    prev_pet = pet
 
 async def init():
     global supabase
