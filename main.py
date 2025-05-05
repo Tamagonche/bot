@@ -104,6 +104,10 @@ async def punch(msg: Message, _):
 async def sweat(msg: Message, _):
     await on_action(msg, "sweat")
 
+@tamagonche.command("encule")
+async def fuck(msg: Message, _):
+    await on_action(msg, "fuck")
+
 async def notify_dead():
     await tamagonche.post_message("Je suis MORT :rip:")
 
