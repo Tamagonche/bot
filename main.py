@@ -23,6 +23,7 @@ WHITELIST = [
     "Snafou",
     "PertesBlanches",
     "Haute-Saone",
+    "LeonXIV",
 ]
 
 onchebot.setup(
