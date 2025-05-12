@@ -24,6 +24,7 @@ WHITELIST = [
     "PertesBlanches",
     "Haute-Saone",
     "LeonXIV",
+    "Lacachette",
 ]
 
 onchebot.setup(
